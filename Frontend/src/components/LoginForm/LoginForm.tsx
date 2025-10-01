@@ -30,7 +30,7 @@ function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <div className='flex gap-2'>
-            <input className='border border-zinc-300 rounded-lg py-1 px-2' type='checkbox' />
+            <input className='border border-zinc-300 rounded-lg' type='checkbox' />
             Lembre de mim
           </div>
         </div>
