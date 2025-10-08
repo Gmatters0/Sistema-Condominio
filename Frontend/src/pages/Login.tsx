@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
+import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,18 +18,27 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulação de login - substituir por autenticação real
-    setTimeout(() => {
-      if (email && password) {
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("userEmail", email);
+    try {
+      const response = await axios.post('http://localhost:3000/auth/login', {
+        email,
+        password,
+      });
+
+      const { access_token } = response.data;
+
+      if (access_token) {
+        localStorage.setItem("token", access_token);
+        // Decodificar o token para obter o email do usuário
+        const userPayload = JSON.parse(atob(access_token.split('.')[1]));
+        localStorage.setItem("userEmail", userPayload.email);
         toast.success("Login realizado com sucesso!");
         navigate("/dashboard");
-      } else {
-        toast.error("Preencha todos os campos");
       }
+    } catch (error) {
+      toast.error("E-mail ou senha inválidos.");
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
