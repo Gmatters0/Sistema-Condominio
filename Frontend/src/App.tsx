@@ -1,0 +1,56 @@
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import DashboardLayout from "./layouts/DashboardLayout";
+import Dashboard from "./pages/Dashboard";
+import Reservas from "./pages/Reservas";
+import OrdensServico from "./pages/OrdensServico";
+import Visitantes from "./pages/Visitantes";
+import Patrimonio from "./pages/Patrimonio";
+import Avisos from "./pages/Avisos";
+import QuadroAvisos from "./pages/QuadroAvisos";
+import Emails from "./pages/Emails";
+import Logs from "./pages/Logs";
+import Moradores from "./pages/admin/Moradores";
+import Unidades from "./pages/admin/Unidades";
+import Prestadores from "./pages/admin/Prestadores";
+import NotFound from "./pages/NotFound";
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />
+          
+          <Route element={<DashboardLayout />}>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="reservas" element={<Reservas />} />
+            <Route path="ordens-servico" element={<OrdensServico />} />
+            <Route path="visitantes" element={<Visitantes />} />
+            <Route path="patrimonio" element={<Patrimonio />} />
+            <Route path="avisos" element={<Avisos />} />
+            <Route path="quadro-avisos" element={<QuadroAvisos />} />
+            <Route path="emails" element={<Emails />} />
+            <Route path="logs" element={<Logs />} />
+            <Route path="admin/moradores" element={<Moradores />} />
+            <Route path="admin/unidades" element={<Unidades />} />
+            <Route path="admin/prestadores" element={<Prestadores />} />
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;
