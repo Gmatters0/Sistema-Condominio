@@ -18,6 +18,7 @@ import Moradores from "./pages/admin/Moradores";
 import Unidades from "./pages/admin/Unidades";
 import Prestadores from "./pages/admin/Prestadores";
 import NotFound from "./pages/NotFound";
+import MoradoresCadastro from "./pages/admin/MoradoresCadastro";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
-          
+
           <Route element={<DashboardLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="reservas" element={<Reservas />} />
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="emails" element={<Emails />} />
             <Route path="logs" element={<Logs />} />
             <Route path="admin/moradores" element={<Moradores />} />
+            <Route path="admin/moradores-cadastro" element={<MoradoresCadastro />} />
             <Route path="admin/unidades" element={<Unidades />} />
             <Route path="admin/prestadores" element={<Prestadores />} />
           </Route>

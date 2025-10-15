@@ -1,15 +1,61 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Users } from "lucide-react";
+import { Plus, Users, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Tipagem para representar a estrutura completa do morador vindo da API
+type MoradorComUser = {
+  id: number;
+  nome: string;
+  sobrenome: string;
+  cpf: string;
+  telefone: string;
+  unidade: {
+    bloco: string;
+    apartamento: string;
+  };
+  user: {
+    // Adicione mais campos do usuário se precisar, como 'ativo'
+    id: number;
+    email: string;
+    // Supondo que você terá um campo 'status' no usuário no futuro
+    status?: 'ativo' | 'inativo';
+  };
+};
 
 const Moradores = () => {
-  const [moradores] = useState([
-    { id: 1, nome: "Carlos Silva", unidade: "Apt. 302", cpf: "123.456.789-00", status: "ativo" },
-    { id: 2, nome: "Ana Santos", unidade: "Apt. 105", cpf: "987.654.321-00", status: "ativo" },
-    { id: 3, nome: "Pedro Costa", unidade: "Apt. 201", cpf: "456.789.123-00", status: "inativo" },
-  ]);
+  // Estado para armazenar a lista de moradores da API
+  const [moradores, setMoradores] = useState<MoradorComUser[]>([]);
+  // Estado para controlar a exibição do loading
+  const [loading, setLoading] = useState(true);
+
+  // useEffect para buscar os dados da API quando o componente montar
+  useEffect(() => {
+    const fetchMoradores = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get<MoradorComUser[]>('http://localhost:3000/moradores', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setMoradores(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar moradores:", error);
+        toast.error("Não foi possível carregar a lista de moradores.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMoradores();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -18,10 +64,12 @@ const Moradores = () => {
           <h1 className="text-3xl font-bold">Cadastro de Moradores</h1>
           <p className="text-muted-foreground mt-1">Gerencie os moradores do condomínio</p>
         </div>
-        <Button className="gradient-primary hover:opacity-90">
-          <Plus className="w-4 h-4 mr-2" />
-          Novo Morador
-        </Button>
+        <Link to={'/admin/moradores-cadastro'}>
+          <Button className="gradient-primary hover:opacity-90">
+            <Plus className="w-4 h-4 mr-2" />
+            Novo Morador
+          </Button>
+        </Link>
       </div>
 
       <Card className="border-0 shadow-custom">
@@ -31,22 +79,49 @@ const Moradores = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {moradores.map((morador) => (
-              <div key={morador.id} className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-lg bg-primary/10">
-                    <Users className="w-5 h-5 text-primary" />
+            {loading ? (
+              // Esqueleto de carregamento enquanto os dados são buscados
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-12 w-12 rounded-lg" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-[250px]" />
+                      <Skeleton className="h-4 w-[200px]" />
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold">{morador.nome}</h4>
-                    <p className="text-sm text-muted-foreground">{morador.unidade} - {morador.cpf}</p>
-                  </div>
+                  <Skeleton className="h-6 w-[70px] rounded-full" />
                 </div>
-                <Badge variant={morador.status === "ativo" ? "default" : "secondary"}>
-                  {morador.status === "ativo" ? "Ativo" : "Inativo"}
-                </Badge>
+              ))
+            ) : moradores.length > 0 ? (
+              // Mapeia e exibe a lista de moradores quando o carregamento termina
+              moradores.map((morador) => (
+                <div key={morador.id} className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-lg bg-primary/10">
+                      <Users className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">{`${morador.nome} ${morador.sobrenome}`}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {`Bloco ${morador.unidade.bloco} - Apto ${morador.unidade.apartamento}`} - CPF: {morador.cpf}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Lógica para o status (vamos assumir 'ativo' por enquanto) */}
+                  <Badge variant={"default"}>
+                    Ativo
+                  </Badge>
+                </div>
+              ))
+            ) : (
+              // Mensagem exibida se não houver moradores cadastrados
+              <div className="text-center py-10 text-muted-foreground flex flex-col items-center gap-2">
+                <AlertCircle className="w-6 h-6" />
+                <p>Nenhum morador cadastrado ainda.</p>
+                <p className="text-sm">Clique em "Novo Morador" para começar.</p>
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>
