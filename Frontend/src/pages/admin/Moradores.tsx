@@ -20,18 +20,14 @@ type MoradorComUser = {
     apartamento: string;
   };
   user: {
-    // Adicione mais campos do usuário se precisar, como 'ativo'
     id: number;
     email: string;
-    // Supondo que você terá um campo 'status' no usuário no futuro
     status?: 'ativo' | 'inativo';
   };
 };
 
 const Moradores = () => {
-  // Estado para armazenar a lista de moradores da API
   const [moradores, setMoradores] = useState<MoradorComUser[]>([]);
-  // Estado para controlar a exibição do loading
   const [loading, setLoading] = useState(true);
 
   // useEffect para buscar os dados da API quando o componente montar
@@ -80,7 +76,6 @@ const Moradores = () => {
         <CardContent>
           <div className="space-y-3">
             {loading ? (
-              // Esqueleto de carregamento enquanto os dados são buscados
               Array.from({ length: 3 }).map((_, index) => (
                 <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
                   <div className="flex items-center gap-4">
@@ -94,7 +89,6 @@ const Moradores = () => {
                 </div>
               ))
             ) : moradores.length > 0 ? (
-              // Mapeia e exibe a lista de moradores quando o carregamento termina
               moradores.map((morador) => (
                 <div key={morador.id} className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-4">

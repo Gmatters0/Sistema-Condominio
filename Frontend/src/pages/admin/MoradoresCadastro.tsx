@@ -7,6 +7,7 @@ import { FormEvent, useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { isValidEmail, isValidCPF, isValidPhone } from "@/utils/validations";
 
 // Tipo para os dados da Unidade que vêm da API
 type Unidade = {
@@ -34,8 +35,6 @@ const NovoMoradorForm = () => {
   // Estado para controlar o carregamento durante o envio do formulário
   const [loading, setLoading] = useState(false);
 
-  // Validação para habilitar/desabilitar o botão de submit.
-  // Retorna true apenas se todos os campos do formulário estiverem preenchidos.
   const isFormValid = useMemo(() => {
     return Object.values(formData).every(value => value.trim() !== '');
   }, [formData]);
@@ -78,11 +77,29 @@ const NovoMoradorForm = () => {
     e.preventDefault();
     if (!isFormValid) return; // Segurança extra
 
+    if (!isFormValid) return;
+
+    if (!isValidCPF(formData.cpf)) {
+      toast.error("O CPF deve conter exatamente 11 dígitos.");
+      return;
+    }
+
+    if (!isValidPhone(formData.telefone)) {
+      toast.error("O telefone deve conter 10 ou 11 dígitos (com DDD).");
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      toast.error("Por favor, insira um endereço de email válido.");
+      return;
+    }
+
     setLoading(true);
 
-    // Converte unidadeId para número, como a API espera
     const payload = {
       ...formData,
+      cpf: formData.cpf.replace(/\D/g, ''),
+      telefone: formData.telefone.replace(/\D/g, ''),
       unidadeId: Number(formData.unidadeId),
     };
 
@@ -93,7 +110,6 @@ const NovoMoradorForm = () => {
       });
 
       toast.success("Morador cadastrado com sucesso!");
-      // Opcional: Limpar o formulário ou redirecionar o usuário
       setFormData({
         nome: '',
         sobrenome: '',
@@ -106,7 +122,6 @@ const NovoMoradorForm = () => {
     } catch (error) {
       console.error("Erro ao cadastrar morador:", error);
       if (axios.isAxiosError(error) && error.response) {
-        // Mostra a mensagem de erro vinda do backend (ex: "CPF já cadastrado")
         toast.error(error.response.data.message || "Falha ao cadastrar morador.");
       } else {
         toast.error("Ocorreu um erro desconhecido.");
@@ -146,11 +161,11 @@ const NovoMoradorForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="flex flex-col w-full gap-2">
                 <Label htmlFor="cpf">CPF</Label>
-                <Input id="cpf" name="cpf" placeholder="000.000.000-00" value={formData.cpf} onChange={handleChange} required />
+                <Input id="cpf" name="cpf" placeholder="000.000.000-00" value={formData.cpf} onChange={handleChange} maxLength={14} required />
               </div>
               <div className="flex flex-col w-full gap-2">
                 <Label htmlFor="telefone">Telefone</Label>
-                <Input id="telefone" name="telefone" type="tel" placeholder="(62) 99999-9999" value={formData.telefone} onChange={handleChange} required />
+                <Input id="telefone" name="telefone" type="tel" placeholder="(62) 99999-9999" value={formData.telefone} maxLength={15} onChange={handleChange} required />
               </div>
               <div className="flex flex-col w-full gap-2">
                 <Label>Unidade</Label>
