@@ -1,7 +1,6 @@
 # Sistema de Gestão de Condomínio
 
 ![Badge de Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
-![Badge de Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
 
 ## 📖 Sobre o Projeto
 
@@ -11,11 +10,36 @@ O projeto foi construído com uma arquitetura de microsserviços em mente, com u
 
 ## ✨ Funcionalidades Implementadas
 
+### Segurança e Acesso
 * **Autenticação de Usuários**: Sistema de login seguro utilizando JWT (JSON Web Tokens), com tempo de expiração configurável.
 * **Controle de Acesso Baseado em Perfis (RBAC)**:
     * **Administrador**: Acesso total ao sistema, incluindo o cadastro de novos usuários.
-    * **Usuário Padrão**: Acesso a funcionalidades gerais do sistema (funcionalidades a serem implementadas).
+    * **Usuário Padrão**: Acesso às funcionalidades de reserva e visualização.
 * **Cadastro de Usuários**: Endpoint protegido para que apenas administradores possam cadastrar novos usuários no sistema.
+
+### Gestão Administrativa
+* **Gestão de Unidades**: 
+    * Cadastro de blocos e apartamentos.
+    * **Diferencial**: Listagem com ordenação numérica inteligente ("Human Sorting"), garantindo a ordem lógica (ex: Bloco A, Apto 2 vem antes de Apto 10).
+* **Gestão de Moradores**: 
+    * Cadastro completo (Dados pessoais, Contato) vinculado a Unidades existentes.
+    * Criação automática de usuário de acesso.
+    * Listagem em ordem alfabética (Nome + Sobrenome).
+    * **Validações**: Verificação de formato de CPF, Telefone e Email.
+* **Prestadores de Serviço**: 
+    * Cadastro de profissionais e empresas terceirizadas.
+    * **Validação Híbrida**: Campo de documento aceita CPF (11 dígitos) ou CNPJ (14 dígitos) com formatação automática.
+
+### Operacional do Condomínio
+* **Reservas de Áreas Comuns**: 
+    * Agendamento de espaços (Churrasqueira, Salão de Festas, Piscina, etc.).
+    * **Regra de Negócio**: O backend valida conflitos de horário, impedindo reservas duplicadas para o mesmo local e período.
+    * Visualização de status (Agendada / Concluída).
+* **Ordens de Serviço (OS)**: 
+    * Abertura de chamados de manutenção (Título, Local, Prioridade).
+    * Atribuição direta a um Prestador de Serviço.
+    * Fluxo de status: Aberto (padrão), Em Andamento e Fechado (restrito a admins).
+    * Indicadores visuais de prioridade (Baixa, Média, Alta).
 
 ## 🚀 Tecnologias Utilizadas
 
@@ -42,8 +66,10 @@ Este projeto é dividido em duas partes principais: o Backend e o Frontend.
 | **Vite** | Ferramenta de build moderna e ultrarrápida para desenvolvimento frontend. |
 | **TypeScript** | Garante a tipagem e a escalabilidade do código. |
 | **Tailwind CSS** | Framework CSS utility-first para estilização rápida e responsiva. |
-| **shadcn/ui** | Coleção de componentes de UI reutilizáveis. |
+| **shadcn/ui** | Coleção de componentes de UI reutilizáveis e acessíveis. |
 | **Axios** | Cliente HTTP para realizar requisições à API do backend. |
+| **Lucide React** | Biblioteca de ícones leve e consistente. |
+| **Sonner** | Biblioteca para notificações toast elegantes. |
 
 ---
 
@@ -117,6 +143,3 @@ Como o cadastro de usuários é uma rota protegida, siga os passos abaixo para c
 
 ---
 
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE.md) para mais detalhes.
