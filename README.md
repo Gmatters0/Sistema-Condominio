@@ -6,7 +6,7 @@
 
 Este é um projeto full-stack de um sistema para gestão de condomínios, desenvolvido como parte da disciplina de Sistemas Distribuídos. A aplicação visa centralizar e otimizar as operações diárias de um condomínio, oferecendo uma interface moderna e funcionalidades robustas tanto para administradores quanto para moradores.
 
-O projeto foi construído com uma arquitetura de microsserviços em mente, com um backend em **NestJS** responsável pela lógica de negócio e segurança, e um frontend em **React** para a interface do usuário.
+O projeto foi construído com uma arquitetura MVP em mente, com um backend em **NestJS** responsável pela lógica de negócio e segurança, e um frontend em **React** para a interface do usuário.
 
 ## ✨ Funcionalidades Implementadas
 
@@ -142,4 +142,5 @@ Como o cadastro de usuários é uma rota protegida, siga os passos abaixo para c
 4.  **Remova o decorator `@IsPublic()`** para proteger a rota novamente.
 
 ---
+
 
