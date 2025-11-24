@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,13 +9,10 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Tipo que reflete os dados retornados pela API
 type Unidade = {
   id: number;
   bloco: string;
   apartamento: string;
-  // O campo moradores é opcional, pois depende se a API está retornando a relação.
-  // Usaremos isso para tentar definir o status (ocupado/vago)
   moradores?: any[];
 };
 
@@ -32,7 +30,16 @@ const Unidades = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setUnidades(response.data);
+
+        const unidadesOrdenadas = response.data.sort((a, b) => {
+          const compareBloco = a.bloco.localeCompare(b.bloco, undefined, { numeric: true });
+
+          if (compareBloco !== 0) return compareBloco;
+
+          return a.apartamento.localeCompare(b.apartamento, undefined, { numeric: true });
+        });
+
+        setUnidades(unidadesOrdenadas);
       } catch (error) {
         console.error("Erro ao buscar unidades:", error);
         toast.error("Não foi possível carregar a lista de unidades.");
@@ -67,7 +74,6 @@ const Unidades = () => {
         <CardContent>
           <div className="space-y-3">
             {loading ? (
-              // Esqueleto de carregamento (Skeleton)
               Array.from({ length: 3 }).map((_, index) => (
                 <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
                   <div className="flex items-center gap-4">

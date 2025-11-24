@@ -31,7 +31,12 @@ const Prestadores = () => {
         const response = await axios.get<Prestador[]>('http://localhost:3000/prestadores', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setPrestadores(response.data);
+
+        const prestadoresOrdenados = response.data.sort((a, b) => {
+          return a.nome.localeCompare(b.nome);
+        });
+
+        setPrestadores(prestadoresOrdenados);
       } catch (error) {
         console.error("Erro ao buscar prestadores:", error);
         toast.error("Não foi possível carregar a lista de prestadores.");
@@ -66,7 +71,6 @@ const Prestadores = () => {
         <CardContent>
           <div className="space-y-3">
             {loading ? (
-              // Loading Skeleton
               Array.from({ length: 3 }).map((_, index) => (
                 <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
                   <div className="flex items-center gap-4">
@@ -80,7 +84,6 @@ const Prestadores = () => {
                 </div>
               ))
             ) : prestadores.length > 0 ? (
-              // Lista Real
               prestadores.map((prestador) => (
                 <div key={prestador.id} className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-4">
@@ -101,14 +104,9 @@ const Prestadores = () => {
                       </p>
                     </div>
                   </div>
-                  {/* Como ainda não temos status no banco, deixei visualmente como 'Disponível' */}
-                  <Badge variant="outline" className="bg-background">
-                    Disponível
-                  </Badge>
                 </div>
               ))
             ) : (
-              // Estado Vazio
               <div className="text-center py-10 text-muted-foreground flex flex-col items-center gap-2">
                 <AlertCircle className="w-6 h-6" />
                 <p>Nenhum prestador cadastrado.</p>

@@ -30,7 +30,6 @@ const Moradores = () => {
   const [moradores, setMoradores] = useState<MoradorComUser[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // useEffect para buscar os dados da API quando o componente montar
   useEffect(() => {
     const fetchMoradores = async () => {
       setLoading(true);
@@ -41,7 +40,15 @@ const Moradores = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setMoradores(response.data);
+
+        const moradoresOrdenados = response.data.sort((a, b) => {
+          const compareNome = a.nome.localeCompare(b.nome);
+          if (compareNome !== 0) return compareNome;
+
+          return a.sobrenome.localeCompare(b.sobrenome);
+        });
+
+        setMoradores(moradoresOrdenados);
       } catch (error) {
         console.error("Erro ao buscar moradores:", error);
         toast.error("Não foi possível carregar a lista de moradores.");
@@ -102,14 +109,12 @@ const Moradores = () => {
                       </p>
                     </div>
                   </div>
-                  {/* Lógica para o status (vamos assumir 'ativo' por enquanto) */}
                   <Badge variant={"default"}>
                     Ativo
                   </Badge>
                 </div>
               ))
             ) : (
-              // Mensagem exibida se não houver moradores cadastrados
               <div className="text-center py-10 text-muted-foreground flex flex-col items-center gap-2">
                 <AlertCircle className="w-6 h-6" />
                 <p>Nenhum morador cadastrado ainda.</p>
