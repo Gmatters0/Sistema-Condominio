@@ -1,6 +1,6 @@
 # Sistema de Gestão de Condomínio
 
-![Badge de Status](https://img.shields.io/badge/status-concluído-brightgreen)
+![Badge de Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
 
 ## 📖 Sobre o Projeto
 
@@ -126,3 +126,4 @@ Como o sistema possui rotas protegidas, para o primeiro uso:
 2.  Adicione o decorator `@IsPublic()` acima do método `@Post()` de criação (`create`).
 3.  Faça uma requisição (via Postman/Insomnia) para criar seu usuário Admin.
 4.  **Remova** o decorator `@IsPublic()` para restaurar a segurança.
+
