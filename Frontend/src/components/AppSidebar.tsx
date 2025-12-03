@@ -34,17 +34,15 @@ const menuItems = [
   { title: "Reserva de Áreas", url: "/reservas", icon: Calendar },
   { title: "Ordem de Serviço", url: "/ordens-servico", icon: Wrench },
   { title: "Controle de Visitantes", url: "/visitantes", icon: Users },
-  { title: "Patrimônio", url: "/patrimonio", icon: Package },
-  { title: "Cadastro de Avisos", url: "/avisos", icon: Bell },
   { title: "Quadro de Avisos", url: "/quadro-avisos", icon: MessageSquare },
   { title: "Disparo de E-mails", url: "/emails", icon: Mail },
-  { title: "Log de Ações", url: "/logs", icon: FileText },
 ];
 
 const adminItems = [
   { title: "Moradores", url: "/admin/moradores", icon: Users },
   { title: "Unidades", url: "/admin/unidades", icon: Building2 },
   { title: "Prestadores", url: "/admin/prestadores", icon: UserCog },
+  { title: "Cadastro de Avisos", url: "/admin/avisos", icon: Bell },
 ];
 
 export function AppSidebar() {

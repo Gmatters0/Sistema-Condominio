@@ -53,13 +53,11 @@ const ReservaCadastro = () => {
           axios.get<Morador[]>('http://localhost:3000/moradores', { headers: { Authorization: `Bearer ${token}` } })
         ]);
 
-        // Formata Áreas para o Combobox
         setAreasOptions(areasRes.data.map(area => ({
           value: String(area.id),
           label: area.nome
         })));
 
-        // Formata Moradores para o Combobox (Nome + Unidade para facilitar identificação)
         setMoradoresOptions(moradoresRes.data.map(morador => ({
           value: String(morador.id),
           label: `${morador.nome} ${morador.sobrenome} (Bl ${morador.unidade.bloco} - Ap ${morador.unidade.apartamento})`
@@ -83,7 +81,6 @@ const ReservaCadastro = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Validações básicas de Frontend
     if (!formData.areaComumId || !formData.moradorId || !formData.data || !formData.horaInicio || !formData.horaFim) {
       toast.error("Por favor, preencha todos os campos.");
       setLoading(false);
@@ -99,7 +96,6 @@ const ReservaCadastro = () => {
     try {
       const token = localStorage.getItem("token");
 
-      // Prepara o payload convertendo IDs para número
       const payload = {
         areaComumId: Number(formData.areaComumId),
         moradorId: Number(formData.moradorId),
@@ -113,12 +109,11 @@ const ReservaCadastro = () => {
       });
 
       toast.success("Reserva realizada com sucesso!");
-      navigate('/admin/reservas'); // Redireciona para a listagem (que faremos a seguir)
+      navigate('/reservas');
 
     } catch (error) {
       console.error("Erro ao criar reserva:", error);
       if (axios.isAxiosError(error) && error.response) {
-        // Mensagem vinda do backend (ex: "Horário indisponível")
         toast.error(error.response.data.message || "Falha ao criar reserva.");
       } else {
         toast.error("Ocorreu um erro desconhecido.");

@@ -1,4 +1,4 @@
-// Frontend/src/utils/validations.ts
+import { z } from "zod";
 
 export const isValidEmail = (email: string) => {
 	// Verifica formato padrão: texto@texto.texto
@@ -26,3 +26,22 @@ export const isValidCNPJ = (cnpj: string) => {
 export const onlyNumbers = (value: string) => {
 	return value.replace(/\D/g, "");
 };
+
+export const visitanteSchema = z.object({
+	nome: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
+	unidadeId: z.string().min(1, "Selecione uma unidade"),
+});
+
+export type VisitanteFormData = z.infer<typeof visitanteSchema>;
+
+export const avisoSchema = z.object({
+	titulo: z.string().min(3, "O título deve ter pelo menos 3 caracteres"),
+	descricao: z
+		.string()
+		.min(10, "A descrição deve ser detalhada (mín. 10 caracteres)"),
+	flag: z.enum(["Informativo", "Urgente", "Importante", "Manutenção"], {
+		errorMap: () => ({ message: "Selecione uma categoria válida" }),
+	}),
+});
+
+export type AvisoFormData = z.infer<typeof avisoSchema>;

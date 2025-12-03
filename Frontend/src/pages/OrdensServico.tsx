@@ -1,39 +1,72 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Wrench, AlertCircle, UserCog } from "lucide-react";
+import { Plus, Wrench, AlertCircle, UserCog, MoreVertical, CheckCircle, XCircle, Clock, PlayCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-// Tipo alinhado com a entidade do Backend
 type OrdemServico = {
   id: number;
   titulo: string;
   local: string;
   prioridade: 'baixa' | 'media' | 'alta';
-  status: 'aberto' | 'em andamento' | 'fechado';
+  status: 'aberto' | 'em andamento' | 'concluido' | 'cancelado';
   prestador: {
     id: number;
     nome: string;
   };
 };
 
+const BASE_URL = "http://localhost:3000";
+
 const OrdensServico = () => {
   const [ordens, setOrdens] = useState<OrdemServico[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false); // Estado para controlar permissão
+
+  const token = localStorage.getItem("token");
+  const userEmail = localStorage.getItem("userEmail"); // Pega o e-mail salvo
 
   useEffect(() => {
+    // 1. Verifica a Role do usuário assim que a tela carrega
+    const checkUserRole = async () => {
+      if (!userEmail) return;
+
+      try {
+        const response = await axios.get(`${BASE_URL}/users/email/${userEmail}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        // Verifica se a role é 'admin'
+        if (response.data && response.data.role === 'admin') {
+          setIsAdmin(true);
+        }
+      } catch (error) {
+        console.error("Erro ao verificar permissões do usuário:", error);
+      }
+    };
+
+    checkUserRole();
     fetchOrdens();
-  }, []);
+  }, [userEmail, token]);
 
   const fetchOrdens = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get<OrdemServico[]>('http://localhost:3000/ordens-servico', {
+      const response = await axios.get<OrdemServico[]>(`${BASE_URL}/ordens-servico`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setOrdens(response.data);
@@ -45,11 +78,30 @@ const OrdensServico = () => {
     }
   };
 
-  // Auxiliares para formatação visual
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    try {
+      setOrdens(prev => prev.map(order =>
+        order.id === id ? { ...order, status: newStatus as any } : order
+      ));
+
+      await axios.patch(
+        `${BASE_URL}/ordens-servico/${id}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success(`Status atualizado para ${getStatusLabel(newStatus)}`);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao atualizar status");
+      fetchOrdens();
+    }
+  };
+
   const getPriorityBadge = (prioridade: string) => {
     switch (prioridade) {
       case 'alta': return "destructive";
-      case 'media': return "default"; // Ou use uma cor personalizada como "secondary"
+      case 'media': return "default";
       default: return "outline";
     }
   };
@@ -57,15 +109,19 @@ const OrdensServico = () => {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'em andamento': return "Em Andamento";
-      case 'fechado': return "Concluída";
+      case 'concluido': return "Concluída";
+      case 'cancelado': return "Cancelada";
       default: return "Aberta";
     }
   };
 
-  const getStatusVariant = (status: string) => {
-    if (status === 'fechado') return "outline"; // Concluído mais discreto
-    if (status === 'em andamento') return "default"; // Em destaque
-    return "secondary"; // Aberto padrão
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'concluido': return "bg-green-100 text-green-800 hover:bg-green-200 border-green-200";
+      case 'em andamento': return "bg-blue-100 text-blue-800 hover:bg-blue-200 border-blue-200";
+      case 'cancelado': return "bg-red-100 text-red-800 hover:bg-red-200 border-red-200";
+      default: return "bg-gray-100 text-gray-800 hover:bg-gray-200 border-gray-200";
+    }
   };
 
   return (
@@ -91,7 +147,6 @@ const OrdensServico = () => {
         <CardContent>
           <div className="space-y-3">
             {loading ? (
-              // Loading Skeleton
               Array.from({ length: 3 }).map((_, index) => (
                 <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
                   <div className="flex items-center gap-4">
@@ -101,52 +156,81 @@ const OrdensServico = () => {
                       <Skeleton className="h-4 w-[150px]" />
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Skeleton className="h-6 w-[60px] rounded-full" />
-                    <Skeleton className="h-6 w-[80px] rounded-full" />
-                  </div>
                 </div>
               ))
             ) : ordens.length > 0 ? (
-              // Lista Real
               ordens.map((ordem) => (
-                <div key={ordem.id} className="flex items-center justify-between p-4 rounded-lg bg-muted/30 transition-base hover:bg-muted/50">
+                <div key={ordem.id} className="flex items-center justify-between p-4 rounded-lg bg-muted/30 transition-all hover:bg-muted/50 border border-transparent hover:border-muted-foreground/10">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-lg bg-warning/10">
-                      <Wrench className="w-5 h-5 text-warning" />
+                    <div className="p-3 rounded-lg bg-primary/10">
+                      <Wrench className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-semibold">{ordem.titulo}</h4>
-                      <p className="text-sm text-muted-foreground flex items-center gap-2">
-                        {ordem.local}
-                        {/* Mostra o prestador se existir */}
+                      <h4 className="font-semibold text-lg">{ordem.titulo}</h4>
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                        <span className="flex items-center gap-1">
+                          📍 {ordem.local}
+                        </span>
                         {ordem.prestador && (
-                          <span className="flex items-center gap-1 text-xs border-l pl-2 ml-1 border-muted-foreground/30">
+                          <span className="flex items-center gap-1 border-l pl-3 border-muted-foreground/30">
                             <UserCog className="w-3 h-3" /> {ordem.prestador.nome}
                           </span>
                         )}
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {/* Badge de Prioridade */}
+
+                  <div className="flex items-center gap-3">
                     <Badge variant={getPriorityBadge(ordem.prioridade) as any}>
                       {ordem.prioridade.charAt(0).toUpperCase() + ordem.prioridade.slice(1)}
                     </Badge>
 
-                    {/* Badge de Status */}
-                    <Badge variant={getStatusVariant(ordem.status) as any} className={ordem.status === 'fechado' ? 'bg-green-100 text-green-800 hover:bg-green-200 border-0' : ''}>
-                      {getStatusLabel(ordem.status)}
-                    </Badge>
+                    {/* Agora verifica o estado isAdmin buscado no banco */}
+                    {isAdmin ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className={`h-7 border px-3 cursor-pointer ${getStatusColor(ordem.status)}`}
+                          >
+                            {getStatusLabel(ordem.status)}
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Alterar Status</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleStatusChange(ordem.id, 'aberto')}>
+                            <Clock className="w-4 h-4 mr-2" /> Aberta
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(ordem.id, 'em andamento')}>
+                            <PlayCircle className="w-4 h-4 mr-2" /> Em Andamento
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(ordem.id, 'concluido')}>
+                            <CheckCircle className="w-4 h-4 mr-2 text-green-600" /> Concluída
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(ordem.id, 'cancelado')}>
+                            <XCircle className="w-4 h-4 mr-2 text-red-600" /> Cancelada
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <Badge className={`${getStatusColor(ordem.status)} border-0`}>
+                        {getStatusLabel(ordem.status)}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               ))
             ) : (
-              // Estado Vazio
-              <div className="text-center py-10 text-muted-foreground flex flex-col items-center gap-2">
-                <AlertCircle className="w-6 h-6" />
-                <p>Nenhuma ordem de serviço encontrada.</p>
-                <p className="text-sm">Clique em "Nova OS" para abrir um chamado.</p>
+              <div className="text-center py-12 text-muted-foreground flex flex-col items-center gap-3 bg-muted/10 rounded-lg border-2 border-dashed">
+                <div className="p-4 rounded-full bg-muted/30">
+                  <AlertCircle className="w-8 h-8 opacity-50" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg">Nenhuma ordem encontrada</h3>
+                  <p className="text-sm mt-1">Clique em "Nova Ordem de Serviço" para abrir um chamado.</p>
+                </div>
               </div>
             )}
           </div>

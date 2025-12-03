@@ -11,11 +11,9 @@ import ReservaCadastro from "./pages/ReservaCadastro"
 import OrdensServico from "./pages/OrdensServico";
 import OrdemServicoCadastro from "./pages/OrdemServicoCadastro";
 import Visitantes from "./pages/Visitantes";
-import Patrimonio from "./pages/Patrimonio";
-import Avisos from "./pages/Avisos";
+import Avisos from "./pages/admin/Avisos";
 import QuadroAvisos from "./pages/QuadroAvisos";
 import Emails from "./pages/Emails";
-import Logs from "./pages/Logs";
 import Moradores from "./pages/admin/Moradores";
 import Unidades from "./pages/admin/Unidades";
 import Prestadores from "./pages/admin/Prestadores";
@@ -23,6 +21,8 @@ import NotFound from "./pages/NotFound";
 import MoradoresCadastro from "./pages/admin/MoradoresCadastro";
 import UnidadesCadastro from "./pages/admin/UnidadesCadastro";
 import PrestadoresCadastro from "./pages/admin/PrestadoresCadastro";
+import VisitanteCadastro from "./pages/VisitanteCadastro";
+import AvisoCadastro from "./pages/admin/AvisoCadastro";
 
 const queryClient = new QueryClient();
 
@@ -43,17 +43,17 @@ const App = () => (
             <Route path="ordens-servico" element={<OrdensServico />} />
             <Route path="ordem-servico-cadastro" element={<OrdemServicoCadastro />} />
             <Route path="visitantes" element={<Visitantes />} />
-            <Route path="patrimonio" element={<Patrimonio />} />
-            <Route path="avisos" element={<Avisos />} />
+            <Route path="visitante-cadastro" element={<VisitanteCadastro />} />
             <Route path="quadro-avisos" element={<QuadroAvisos />} />
             <Route path="emails" element={<Emails />} />
-            <Route path="logs" element={<Logs />} />
             <Route path="admin/moradores" element={<Moradores />} />
             <Route path="admin/moradores-cadastro" element={<MoradoresCadastro />} />
             <Route path="admin/unidades" element={<Unidades />} />
             <Route path="admin/unidades-cadastro" element={<UnidadesCadastro />} />
             <Route path="admin/prestadores" element={<Prestadores />} />
             <Route path="admin/prestadores-cadastro" element={<PrestadoresCadastro />} />
+            <Route path="admin/avisos" element={<Avisos />} />
+            <Route path="admin/aviso-cadastro" element={<AvisoCadastro />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
