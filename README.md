@@ -1,146 +1,128 @@
 # Sistema de Gestão de Condomínio
 
-![Badge de Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+![Badge de Status](https://img.shields.io/badge/status-concluído-brightgreen)
 
 ## 📖 Sobre o Projeto
 
-Este é um projeto full-stack de um sistema para gestão de condomínios, desenvolvido como parte da disciplina de Sistemas Distribuídos. A aplicação visa centralizar e otimizar as operações diárias de um condomínio, oferecendo uma interface moderna e funcionalidades robustas tanto para administradores quanto para moradores.
+Este é um projeto **Full-Stack** completo para gestão de condomínios, desenvolvido para centralizar e otimizar as operações diárias de administração, portaria e convivência. A aplicação oferece uma interface moderna e funcionalidades robustas que atendem administradores, porteiros e moradores.
 
-O projeto foi construído com uma arquitetura MVP em mente, com um backend em **NestJS** responsável pela lógica de negócio e segurança, e um frontend em **React** para a interface do usuário.
+O sistema foi construído seguindo uma arquitetura modular, garantindo escalabilidade e facilidade de manutenção, separando claramente as responsabilidades entre o servidor (API) e o cliente (Interface Web).
 
-## ✨ Funcionalidades Implementadas
+## ✨ Funcionalidades do Sistema
 
-### Segurança e Acesso
-* **Autenticação de Usuários**: Sistema de login seguro utilizando JWT (JSON Web Tokens), com tempo de expiração configurável.
-* **Controle de Acesso Baseado em Perfis (RBAC)**:
-    * **Administrador**: Acesso total ao sistema, incluindo o cadastro de novos usuários.
-    * **Usuário Padrão**: Acesso às funcionalidades de reserva e visualização.
-* **Cadastro de Usuários**: Endpoint protegido para que apenas administradores possam cadastrar novos usuários no sistema.
+### 🔐 Segurança e Acesso
+* **Autenticação JWT**: Login seguro com tokens criptografados e tempo de expiração.
+* **Controle de Acesso (RBAC)**:
+    * **Administrador**: Gestão total (CRUD) de todas as entidades e configurações.
+    * **Morador/Usuário**: Acesso restrito a reservas, visualização de avisos e gestão pessoal.
+* **Guardas de Rotas**: Proteção de endpoints no Backend e redirecionamento seguro no Frontend.
 
-### Gestão Administrativa
-* **Gestão de Unidades**: 
-    * Cadastro de blocos e apartamentos.
-    * **Diferencial**: Listagem com ordenação numérica inteligente ("Human Sorting"), garantindo a ordem lógica (ex: Bloco A, Apto 2 vem antes de Apto 10).
-* **Gestão de Moradores**: 
-    * Cadastro completo (Dados pessoais, Contato) vinculado a Unidades existentes.
-    * Criação automática de usuário de acesso.
-    * Listagem em ordem alfabética (Nome + Sobrenome).
-    * **Validações**: Verificação de formato de CPF, Telefone e Email.
-* **Prestadores de Serviço**: 
-    * Cadastro de profissionais e empresas terceirizadas.
-    * **Validação Híbrida**: Campo de documento aceita CPF (11 dígitos) ou CNPJ (14 dígitos) com formatação automática.
+### 🏢 Gestão Administrativa
+* **Unidades**: Cadastro e listagem de blocos e apartamentos.
+* **Moradores**: Registro completo de condôminos vinculado às unidades, com validação de CPF e criação automática de credenciais de acesso.
+* **Prestadores de Serviço**: Banco de dados de profissionais e empresas (Eletricistas, Encanadores, etc.), com validação de documentos (CPF/CNPJ).
 
-### Operacional do Condomínio
-* **Reservas de Áreas Comuns**: 
-    * Agendamento de espaços (Churrasqueira, Salão de Festas, Piscina, etc.).
-    * **Regra de Negócio**: O backend valida conflitos de horário, impedindo reservas duplicadas para o mesmo local e período.
-    * Visualização de status (Agendada / Concluída).
-* **Ordens de Serviço (OS)**: 
-    * Abertura de chamados de manutenção (Título, Local, Prioridade).
-    * Atribuição direta a um Prestador de Serviço.
-    * Fluxo de status: Aberto (padrão), Em Andamento e Fechado (restrito a admins).
-    * Indicadores visuais de prioridade (Baixa, Média, Alta).
+### 🛡️ Portaria e Controle
+* **Gestão de Visitantes**: [Novo] Cadastro de visitantes com nome e documento, permitindo maior segurança no controle de entrada e saída do condomínio.
+
+### ⚙️ Operacional
+* **Reservas de Áreas Comuns**:
+    * Agendamento de espaços (Churrasqueira, Salão de Festas, Piscina).
+    * **Validação de Conflitos**: O sistema impede automaticamente reservas sobrepostas no mesmo local e horário.
+* **Ordens de Serviço (OS)**:
+    * Abertura de chamados de manutenção com níveis de prioridade (Baixa, Média, Alta).
+    * Acompanhamento de status (*Aberto*, *Em Andamento*, *Fechado*).
+    * Vinculação direta de um prestador de serviço à ordem.
+
+### 📢 Comunicação
+* **Quadro de Avisos**: [Novo] Módulo para publicação de comunicados oficiais do condomínio, visíveis para todos os moradores no Dashboard.
+* **Sistema de E-mails**: [Novo] Integração para envio de notificações e comunicados diretamente pela plataforma.
+
+---
 
 ## 🚀 Tecnologias Utilizadas
 
-Este projeto é dividido em duas partes principais: o Backend e o Frontend.
+### Backend (API)
+Construído com foco em performance e organização.
 
-### Backend
-
-| Tecnologia | Descrição |
+| Tecnologia | Função |
 | :--- | :--- |
-| **Node.js** | Ambiente de execução para o JavaScript no servidor. |
-| **NestJS** | Framework Node.js progressivo para construir aplicações eficientes e escaláveis. |
-| **TypeScript** | Superset do JavaScript que adiciona tipagem estática. |
-| **PostgreSQL** | Banco de dados relacional robusto e de código aberto. |
-| **TypeORM** | Framework ORM para interagir com o banco de dados de forma orientada a objetos. |
-| **JWT** | Implementação de JSON Web Tokens para autenticação e autorização. |
-| **Bcrypt** | Biblioteca para hashing de senhas. |
-| **Passport.js** | Middleware de autenticação para Node.js, integrado ao NestJS. |
+| **NestJS** | Framework principal para a arquitetura modular da API. |
+| **TypeScript** | Linguagem base, garantindo tipagem estática e segurança. |
+| **PostgreSQL** | Banco de dados relacional. |
+| **TypeORM** | ORM para manipulação do banco de dados e relacionamentos. |
+| **Passport & JWT** | Estratégias de autenticação e autorização. |
+| **Nodemailer** | Serviço para envio de e-mails do sistema. |
+| **Class-Validator** | Validação robusta de dados de entrada (DTOs). |
 
-### Frontend
+### Frontend (Web)
+Interface reativa, limpa e responsiva.
 
-| Tecnologia | Descrição |
+| Tecnologia | Função |
 | :--- | :--- |
-| **React** | Biblioteca JavaScript para construir interfaces de usuário. |
-| **Vite** | Ferramenta de build moderna e ultrarrápida para desenvolvimento frontend. |
-| **TypeScript** | Garante a tipagem e a escalabilidade do código. |
-| **Tailwind CSS** | Framework CSS utility-first para estilização rápida e responsiva. |
-| **shadcn/ui** | Coleção de componentes de UI reutilizáveis e acessíveis. |
-| **Axios** | Cliente HTTP para realizar requisições à API do backend. |
-| **Lucide React** | Biblioteca de ícones leve e consistente. |
-| **Sonner** | Biblioteca para notificações toast elegantes. |
+| **React** | Biblioteca para construção da interface. |
+| **Vite** | Build tool para desenvolvimento rápido. |
+| **Tailwind CSS** | Estilização utility-first. |
+| **shadcn/ui** | Componentes de interface reutilizáveis e acessíveis. |
+| **Axios** | Cliente HTTP para comunicação com a API. |
+| **Lucide React** | Ícones vetoriais modernos. |
+| **Sonner** | Feedback visual (Toasts) para ações do usuário. |
 
 ---
 
 ## 🏁 Como Rodar o Projeto
 
-Para executar este projeto localmente, você precisará configurar o Backend e o Frontend separadamente.
+Para executar o sistema completo, é necessário configurar o servidor (Backend) e a interface (Frontend).
 
 ### Pré-requisitos
-
-* [Node.js](https://nodejs.org/en/) (versão 18 ou superior)
-* [PostgreSQL](https://www.postgresql.org/download/) instalado e rodando.
-* Um gerenciador de pacotes como `npm` ou `yarn`.
+* [Node.js](https://nodejs.org/en/) (v18+)
+* [PostgreSQL](https://www.postgresql.org/download/) rodando localmente ou em container.
 
 ### 1. Configuração do Backend
 
-**a) Clone o repositório:**
-```bash
-git clone <URL_DO_SEU_REPOSITORIO>
-cd <NOME_DO_REPOSITORIO>/Backend
-```
-
-**b) Instale as dependências:**
-```bash
-npm install
-```
-
-**c) Configure o banco de dados:**
-1.  Acesse o PostgreSQL e crie um novo banco de dados.
-    ```sql
-    CREATE DATABASE "sistema-condominio";
+1.  **Acesse a pasta:**
+    ```bash
+    cd Backend
     ```
-2.  Verifique se as credenciais no arquivo `src/database/database.module.ts` correspondem à sua configuração local (usuário, senha, porta).
-
-**d) Configure as variáveis de ambiente:**
-É uma boa prática não deixar segredos no código. No arquivo `src/auth/constants.ts`, altere a `secret` do JWT para uma chave mais segura.
-
-**e) Rode a aplicação backend:**
-```bash
-npm run start:dev
-```
-O servidor estará rodando em `http://localhost:3000`.
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+3.  **Configure o Banco de Dados:**
+    * Crie um banco chamado `sistema-condominio` no PostgreSQL.
+    * Verifique as credenciais em `src/database/database.module.ts`.
+4.  **Configuração de Variáveis:**
+    * Crie um arquivo `.env` na raiz do backend (baseado no uso do `ConfigModule`).
+    * Defina a chave `JWT_SECRET` e as configurações de e-mail se necessário.
+5.  **Inicie o servidor:**
+    ```bash
+    npm run start:dev
+    ```
+    *O servidor rodará em `http://localhost:3000`.*
 
 ### 2. Configuração do Frontend
 
-**a) Abra um novo terminal e navegue até a pasta do Frontend:**
-```bash
-cd <NOME_DO_REPOSITORIO>/Frontend
-```
-
-**b) Instale as dependências:**
-```bash
-npm install
-```
-
-**c) Configure a URL da API:**
-Verifique o arquivo `src/pages/Login.tsx` e certifique-se de que a URL da requisição do Axios aponta para o seu backend (ex: `http://localhost:3000/auth/login`).
-
-**d) Rode a aplicação frontend:**
-```bash
-npm run dev
-```
-A aplicação estará acessível em `http://localhost:5173` (ou outra porta indicada no terminal).
-
-### 3. Criando o Primeiro Usuário Administrador
-
-Como o cadastro de usuários é uma rota protegida, siga os passos abaixo para criar o primeiro administrador:
-1.  No código do backend, abra o arquivo `src/user/user.controller.ts`.
-2.  Adicione temporariamente o decorator `@IsPublic()` na rota `create`.
-3.  Use uma ferramenta de API (como Postman ou Insomnia) para fazer uma requisição `POST` para `http://localhost:3000/user` com os dados do administrador.
-4.  **Remova o decorator `@IsPublic()`** para proteger a rota novamente.
+1.  **Acesse a pasta:**
+    ```bash
+    cd Frontend
+    ```
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+3.  **Inicie a aplicação:**
+    ```bash
+    npm run dev
+    ```
+    *Acesse a aplicação no navegador através do link fornecido (geralmente `http://localhost:5173`).*
 
 ---
 
+## 👤 Criando o Primeiro Acesso (Admin)
 
+Como o sistema possui rotas protegidas, para o primeiro uso:
+
+1.  No Backend, edite `src/user/user.controller.ts`.
+2.  Adicione o decorator `@IsPublic()` acima do método `@Post()` de criação (`create`).
+3.  Faça uma requisição (via Postman/Insomnia) para criar seu usuário Admin.
+4.  **Remova** o decorator `@IsPublic()` para restaurar a segurança.
